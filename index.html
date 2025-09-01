@@ -4,531 +4,499 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AJK WEB3 - 全面融入新世界</title>
+    <!-- 引入 Tailwind CSS 进行快速响应式布局 -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts 字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* 自定义样式和动画 */
-        :root {
-            --ajk-blue: #2563eb;
-            --ajk-gold: #ca8a04;
-            --ajk-dark: #1f2937;
-            --ajk-light: #f9fafb;
-        }
-
+        /* 自定义样式 */
         body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-color: var(--ajk-light);
-            color: var(--ajk-dark);
-            scroll-behavior: smooth;
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            color: #E0E0E0; /* 默认浅色文字，适应深色背景 */
+            overscroll-behavior: none; /* 防止在容器末端滚动时触发浏览器默认行为 */
         }
 
         /* 全屏滚动容器 */
         .scroll-container {
-            scroll-snap-type: y mandatory;
-            overflow-y: scroll;
+            width: 100%;
             height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory; /* 强制Y轴滚动捕捉 */
         }
 
-        /* 每个全屏部分 */
+        /* 每个滚动部分 */
         .scroll-section {
-            scroll-snap-align: start;
-            height: 100vh;
             width: 100%;
+            height: 100vh;
+            scroll-snap-align: start; /* 每个部分的顶部与视口对齐 */
+            flex-shrink: 0;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             padding: 2rem;
-            position: relative;
-            overflow: hidden;
+            overflow: hidden; /* 防止内容溢出 */
+        }
+        
+        /* 动态背景容器 */
+        #vanta-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* 将背景置于最底层 */
         }
 
-        /* 动态渐变背景 */
-        .animated-gradient-bg {
-            background: linear-gradient(-45deg, #e0f2fe, #fefce8, #dbeafe, #fef3c7);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+        /* 渐变大字标题样式 */
+        .gradient-text {
+            background: linear-gradient(90deg, #4F46E5, #0EA5E9, #6366F1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 滚动进入动画 */
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 侧边导航栏 */
+        
+        /* 侧边导航栏样式 */
         .side-nav {
             position: fixed;
-            right: 2rem;
             top: 50%;
+            right: 2rem;
             transform: translateY(-50%);
-            z-index: 50;
-        }
-
-        .side-nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+            z-index: 100;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem; /* 增加圆点间距 */
+            gap: 1rem;
         }
 
         .side-nav a {
-            display: block;
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background-color: rgba(31, 41, 55, 0.3);
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        .side-nav a.active,
-        .side-nav a:hover {
-            background-color: var(--ajk-blue);
-            transform: scale(1.5);
-        }
-
-        /* 渐变大字标题 */
-        .gradient-text {
-            background: linear-gradient(90deg, var(--ajk-blue), var(--ajk-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
         }
         
-        /* 信封图标与链接悬停效果 */
-        .letter-link-container {
-            transition: transform 0.3s ease;
-        }
-        .letter-link-container:hover {
-            transform: translateY(-3px);
-        }
-        .letter-link-container .letter-icon {
-            transition: transform 0.3s ease;
-        }
-        .letter-link-container:hover .letter-icon {
-            transform: rotate(-10deg) scale(1.1);
+        .side-nav a.active {
+            background-color: white;
+            transform: scale(1.2);
         }
 
-        /* 时间轴样式 -- 已被移除 */
+        /* 进入动画效果 */
+        .content-wrapper {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .visible .content-wrapper {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 时间轴样式 */
+        .timeline {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%);
+        }
+        .timeline-item {
+            position: relative;
+            padding-top: 3rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #3B82F6;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 修复Tailwind CSS与滚动捕捉的兼容性问题 */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-900">
 
-    <!-- 侧边导航 -->
+    <!-- 动态背景容器 -->
+    <div id="vanta-bg"></div>
+
+    <!-- 侧边导航栏 -->
     <nav class="side-nav">
-        <ul id="sideNav">
-            <!-- JS 动态生成 -->
-        </ul>
+        <!-- 导航点将由JS动态生成 -->
     </nav>
-
+    
     <!-- 滚动容器 -->
-    <div class="scroll-container">
-
+    <main class="scroll-container">
+        
         <!-- 第1部分：封面 -->
-        <section id="cover" class="scroll-section animated-gradient-bg">
-            <div class="reveal text-center">
-                <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold gradient-text tracking-wider">AJK WEB3</h1>
-                <h2 class="mt-6 text-2xl md:text-4xl text-gray-700">全面融入新世界</h2>
-                <a href="https://mp.weixin.qq.com/s/u8M-LsEv_m0vYyqX8k8XeA" target="_blank" rel="noopener noreferrer" class="letter-link-container mt-12 inline-flex items-center gap-3 text-lg text-blue-600 font-semibold">
-                    <svg class="letter-icon w-8 h-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+        <section id="section-1" class="scroll-section text-center">
+            <div class="content-wrapper">
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-black gradient-text tracking-wider">AJK WEB3</h1>
+                <p class="mt-6 text-2xl md:text-4xl lg:text-5xl font-bold text-white">全面融入新世界</p>
+                <a href="https://mp.weixin.qq.com/s/u8M-LsEv_m0vYyqX8k8XeA" target="_blank" rel="noopener noreferrer" 
+                   class="mt-12 inline-flex items-center justify-center gap-3 text-lg text-blue-300 hover:text-white transition-all duration-300 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
                     </svg>
-                    致爱健康全体伙伴的一封信
+                    <span class="border-b border-blue-300/50 group-hover:border-white/80 transition-all duration-300">致爱健康全体伙伴的一封信</span>
                 </a>
             </div>
         </section>
 
         <!-- 第2部分：市场机遇 -->
-        <section id="opportunity" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">市场机遇</h2>
-                <p class="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">2025年，加密市场总市值已达2.66万亿美元，用户基数近9亿。主流机构入场、资产代币化趋势及AI技术的融合，预示着市场正迎来爆发式增长与深刻变革。AI相关加密资产价值已超390亿美元，AI交易工具成为市场刚需。</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                        <div class="text-5xl font-bold text-blue-600">2.66万亿</div>
-                        <p class="mt-2 text-gray-500">美元加密市场总市值</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                        <div class="text-5xl font-bold text-yellow-600">9亿</div>
-                        <p class="mt-2 text-gray-500">全球用户基数</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                        <div class="text-5xl font-bold text-blue-600">390亿</div>
-                        <p class="mt-2 text-gray-500">美元AI加密资产价值</p>
-                    </div>
-                </div>
+        <section id="section-2" class="scroll-section">
+            <div class="content-wrapper max-w-5xl mx-auto text-center">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">市场机遇</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-12"></div>
+                <p class="text-xl md:text-2xl leading-relaxed text-gray-300">
+                    2025年，加密市场总市值已达<span class="text-blue-400 font-bold">2.66万亿美元</span>，用户基数近<span class="text-blue-400 font-bold">9亿</span>。主流机构入场、资产代币化趋势及AI技术的融合，预示着市场正迎来爆发式增长与深刻变革。AI相关加密资产价值已超<span class="text-blue-400 font-bold">390亿美元</span>，AI交易工具成为市场刚需。
+                </p>
             </div>
         </section>
 
         <!-- 第3部分：用户痛点 -->
-        <section id="pain-points" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-12">用户痛点</h2>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-center">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                        </div>
-                        <h3 class="font-semibold text-lg">信息过载</h3>
-                        <p class="text-sm text-gray-500 mt-2">社交媒体信息庞杂，难以有效筛选。</p>
+        <section id="section-3" class="scroll-section">
+            <div class="content-wrapper max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">用户痛点</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-12"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-lg">
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">信息过载</h3><p class="text-gray-400">社交媒体信息庞杂，投资者难以有效筛选关键信号。</p></div>
                     </div>
-                    <div class="flex flex-col items-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        </div>
-                        <h3 class="font-semibold text-lg">决策盲点</h3>
-                        <p class="text-sm text-gray-500 mt-2">无法量化情绪，决策依赖直觉。</p>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">决策盲点</h3><p class="text-gray-400">无法准确量化市场情绪与价格的关联，决策依赖直觉。</p></div>
                     </div>
-                    <div class="flex flex-col items-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V8a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>
-                        </div>
-                        <h3 class="font-semibold text-lg">分析片面</h3>
-                        <p class="text-sm text-gray-500 mt-2">难以整合宏观、政策等外部因素。</p>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><pie-chart class="h-8 w-8 text-blue-500"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">分析片面</h3><p class="text-gray-400">难以整合宏观经济、政策等外部因素进行综合判断。</p></div>
                     </div>
-                     <div class="flex flex-col items-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </div>
-                        <h3 class="font-semibold text-lg">响应滞后</h3>
-                        <p class="text-sm text-gray-500 mt-2">传统工具无法提供实时决策支持。</p>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">响应滞后</h3><p class="text-gray-400">市场瞬息万变，传统分析工具无法提供实时决策支持。</p></div>
                     </div>
-                    <div class="flex flex-col items-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        </div>
-                        <h3 class="font-semibold text-lg">需求错配</h3>
-                        <p class="text-sm text-gray-500 mt-2">通用化分析无法满足个性化需求。</p>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><path d="m16 6 4 4-10 10H6v-4L16 6z"/><path d="m17.5 2.5-1.5 1.5 4 4 1.5-1.5-4-4z"/><path d="M9 12.5 11.5 15"/><path d="m15 6.5 2.5 2.5"/><path d="M6 18.5 3.5 21"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">需求错配</h3><p class="text-gray-400">通用化分析无法满足不同投资者的个性化需求。</p></div>
                     </div>
-                    <div class="flex flex-col items-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                        </div>
-                        <h3 class="font-semibold text-lg">工具壁垒</h3>
-                        <p class="text-sm text-gray-500 mt-2">专业分析工具门槛高，难以利用。</p>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">工具壁垒</h3><p class="text-gray-400">专业分析工具门槛高，普通投资者难以有效利用。</p></div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- 第4部分：我们的定位 -->
-        <section id="positioning" class="scroll-section animated-gradient-bg">
-            <div class="reveal text-center">
-                <h2 class="text-4xl md:text-6xl font-bold gradient-text">我们的定位</h2>
-                <p class="mt-8 text-xl md:text-2xl text-gray-700 max-w-4xl">专注Web3资金流向分析与投资决策的AI引擎。</p>
+        <section id="section-4" class="scroll-section">
+            <div class="content-wrapper text-center max-w-4xl">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">我们的定位</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-12"></div>
+                <p class="text-2xl md:text-4xl font-light text-gray-200">
+                    专注<span class="text-blue-400">Web3资金流向分析</span>与<span class="text-blue-400">投资决策</span>的AI引擎。
+                </p>
             </div>
         </section>
-
+        
         <!-- 第5部分：解决方案 -->
-        <section id="solution" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto">
-                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-16">解决方案</h2>
-                <div class="grid md:grid-cols-3 gap-10">
-                    <div class="text-center p-6">
-                        <div class="flex justify-center mb-4">
-                            <div class="bg-blue-100 rounded-full p-5">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                            </div>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">超前的情绪洞察</h3>
-                        <p class="text-gray-600">监测X、Reddit等多平台超3000个指标，提供远超竞品的市场情绪洞察。</p>
+        <section id="section-5" class="scroll-section">
+            <div class="content-wrapper max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">解决方案</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-12"></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                    <div class="bg-white/5 p-6 rounded-xl text-center backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4"><path d="M12 2a10 10 0 1 0 10 10c0-4.42-3.58-8-8-8a10 10 0 0 0-10 10zM7 12a5 5 0 0 1 10 0Z"/><path d="M7 12a5 5 0 0 0 10 0"/></svg>
+                        <h3 class="text-xl font-bold text-white mb-2">超前的情绪洞察</h3>
+                        <p class="text-gray-400">监测X、Reddit等多平台超3000个指标，提供远超竞品的市场情绪洞察。</p>
                     </div>
-                    <div class="text-center p-6">
-                         <div class="flex justify-center mb-4">
-                            <div class="bg-blue-100 rounded-full p-5">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                            </div>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">精准的实时情报</h3>
-                        <p class="text-gray-600">AI优化数据流，确保用户获得最快、最准的趋势预测。</p>
+                    <div class="bg-white/5 p-6 rounded-xl text-center backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                        <h3 class="text-xl font-bold text-white mb-2">精准的实时情报</h3>
+                        <p class="text-gray-400">AI优化数据流，确保用户获得最快、最准的趋势预测。</p>
                     </div>
-                    <div class="text-center p-6">
-                         <div class="flex justify-center mb-4">
-                            <div class="bg-blue-100 rounded-full p-5">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            </div>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">高效的智能交易</h3>
-                        <p class="text-gray-600">利用AI驱动的DeFi协议与智能合约，实现自动化交易，降本增效。</p>
+                    <div class="bg-white/5 p-6 rounded-xl text-center backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4"><path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13.759 7.962a4 4 0 0 0-5.283 4.686"/><path d="M8.547 13.33a4 4 0 0 0 5.925 4.128"/><path d="M10.241 16.038a4 4 0 0 0 5.283-4.686"/><path d="M2 12h2"/><circle cx="12" cy="12" r="2"/><path d="m4.93 19.07 1.41-1.41"/><path d="M12 20v2"/><path d="m19.07 19.07-1.41-1.41"/></svg>
+                        <h3 class="text-xl font-bold text-white mb-2">高效的智能交易</h3>
+                        <p class="text-gray-400">利用AI驱动的DeFi协议与智能合约，实现自动化交易，降本增效。</p>
                     </div>
                 </div>
-                <p class="text-center text-gray-700 mt-16 max-w-4xl mx-auto bg-gray-50 p-6 rounded-lg border">我们构建了一个超越传统框架的实时加密货币AI分析系统。通过融合深度社交媒体情绪分析、实时投资情报、链上智能交易及全链资产管理，为用户提供一站式、智能化的投资决策支持，帮助投资者在新环境中发现机会、优化策略。</p>
+                <p class="text-center text-gray-300 max-w-4xl mx-auto text-lg leading-relaxed">
+                    我们构建了一个超越传统框架的实时加密货币AI分析系统。通过融合深度社交媒体情绪分析、实时投资情报、链上智能交易及全链资产管理，为用户提供一站式、智能化的投资决策支持，帮助投资者在新环境中发现机会、优化策略。
+                </p>
             </div>
         </section>
 
         <!-- 第6部分：发展路线图 -->
-        <section id="roadmap" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto">
-                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-16">发展路线图</h2>
-                <div class="relative w-full">
-                    <!-- The connecting line for desktop view -->
-                    <div class="hidden md:block absolute top-8 left-0 w-full h-1 bg-blue-300 z-0"></div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-                        <!-- Stage 1 -->
-                        <div class="flex flex-col items-center">
-                            <div class="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl border-4 border-white shadow-lg z-10">1</div>
-                            <div class="bg-white p-6 rounded-lg shadow-md mt-8 w-full">
-                                <h3 class="text-blue-600 font-bold text-xl mb-2 text-center">阶段一</h3>
-                                <h4 class="font-semibold text-lg mb-2 text-center">社交媒体情绪分析引擎</h4>
-                                <p class="text-sm text-gray-600 text-left"><strong>目标:</strong> 构建强大的数据基础，训练精准识别市场情绪与趋势的AI模型。<br><strong>关键活动:</strong> 聚合多平台社交数据与宏观经济数据，利用NLP和机器学习模型，建立情绪与市场的关联性。</p>
-                            </div>
-                        </div>
-                        <!-- Stage 2 -->
-                        <div class="flex flex-col items-center">
-                            <div class="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl border-4 border-white shadow-lg z-10">2</div>
-                            <div class="bg-white p-6 rounded-lg shadow-md mt-8 w-full">
-                                <h3 class="text-blue-600 font-bold text-xl mb-2 text-center">阶段二</h3>
-                                <h4 class="font-semibold text-lg mb-2 text-center">实时投资智能决策支持</h4>
-                                <p class="text-sm text-gray-600 text-left"><strong>目标:</strong> 将数据分析转化为可执行的实时投资洞察。<br><strong>关键活动:</strong> 生成实时交易信号、策略建议与市场报告，并提供个性化定制与警报功能。</p>
-                            </div>
-                        </div>
-                        <!-- Stage 3 -->
-                        <div class="flex flex-col items-center">
-                           <div class="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl border-4 border-white shadow-lg z-10">3</div>
-                            <div class="bg-white p-6 rounded-lg shadow-md mt-8 w-full">
-                                <h3 class="text-blue-600 font-bold text-xl mb-2 text-center">阶段三</h3>
-                                <h4 class="font-semibold text-lg mb-2 text-center">链上智能交易执行</h4>
-                                <p class="text-sm text-gray-600 text-left"><strong>目标:</strong> 实现从分析到交易的自动化闭环。<br><strong>关键活动:</strong> 基于AI信号，通过DeFi协议与智能合约自动执行交易，并提供透明的链上记录与绩效看板。</p>
-                            </div>
-                        </div>
-                         <!-- Stage 4 -->
-                        <div class="flex flex-col items-center">
-                            <div class="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl border-4 border-white shadow-lg z-10">4</div>
-                             <div class="bg-white p-6 rounded-lg shadow-md mt-8 w-full">
-                                <h3 class="text-blue-600 font-bold text-xl mb-2 text-center">阶段四</h3>
-                                <h4 class="font-semibold text-lg mb-2 text-center">一体化AI资产管理平台</h4>
-                                <p class="text-sm text-gray-600 text-left"><strong>目标:</strong> 成为AI驱动的终极加密投资解决方案。<br><strong>关键功能:</strong> 提供AI定制化投资策略、全链资产管理、市场机会自动捕捉，并创新性推出U卡，打通加密世界与现实支付场景。</p>
-                            </div>
-                        </div>
+        <section id="section-6" class="scroll-section">
+            <div class="content-wrapper max-w-7xl mx-auto w-full">
+                <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">发展路线图</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-20"></div>
+                <div class="timeline">
+                    <div class="timeline-item w-1/4 px-4 text-center">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">阶段一</h3>
+                        <p class="font-semibold text-white mb-2">社交媒体情绪分析引擎</p>
+                        <p class="text-sm text-gray-400">
+                            <strong class="text-gray-200">目标:</strong> 构建强大数据基础，训练精准识别市场情绪与趋势的AI模型。<br>
+                            <strong class="text-gray-200">活动:</strong> 聚合多平台社交与宏观经济数据，利用NLP和机器学习建立情绪与市场的关联性。
+                        </p>
+                    </div>
+                    <div class="timeline-item w-1/4 px-4 text-center">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">阶段二</h3>
+                        <p class="font-semibold text-white mb-2">实时投资智能决策支持</p>
+                        <p class="text-sm text-gray-400">
+                            <strong class="text-gray-200">目标:</strong> 将数据分析转化为可执行的实时投资洞察。<br>
+                            <strong class="text-gray-200">活动:</strong> 生成实时交易信号、策略建议与报告，提供个性化定制与警报功能。
+                        </p>
+                    </div>
+                    <div class="timeline-item w-1/4 px-4 text-center">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">阶段三</h3>
+                        <p class="font-semibold text-white mb-2">链上智能交易执行</p>
+                        <p class="text-sm text-gray-400">
+                            <strong class="text-gray-200">目标:</strong> 实现从分析到交易的自动化闭环。<br>
+                            <strong class="text-gray-200">活动:</strong> 基于AI信号，通过DeFi与智能合约自动执行交易，提供透明的链上记录。
+                        </p>
+                    </div>
+                    <div class="timeline-item w-1/4 px-4 text-center">
+                        <h3 class="text-xl font-bold text-blue-400 mb-2">阶段四</h3>
+                        <p class="font-semibold text-white mb-2">一体化AI资产管理平台</p>
+                        <p class="text-sm text-gray-400">
+                            <strong class="text-gray-200">目标:</strong> 成为终极AI驱动的加密投资解决方案。<br>
+                            <strong class="text-gray-200">功能:</strong> 提供AI定制策略、全链资产管理、市场机会自动捕捉，并创新推出U卡。
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- 第7部分：RWA -->
-        <section id="rwa" class="scroll-section animated-gradient-bg">
-            <div class="reveal text-center">
-                <h2 class="text-6xl md:text-8xl font-bold gradient-text">RWA 资产代币化平台</h2>
+        <section id="section-7" class="scroll-section">
+            <div class="content-wrapper text-center">
+                <h2 class="text-6xl md:text-8xl font-black gradient-text tracking-wider">RWA 资产代币化平台</h2>
             </div>
         </section>
 
-        <!-- 第8部分：市场背景 -->
-        <section id="rwa-market" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto">
-                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-12">市场背景与客户需求</h2>
-                <div class="grid md:grid-cols-2 gap-8 items-center">
-                    <div class="bg-white p-8 rounded-lg shadow-md border">
-                        <h3 class="font-bold text-xl mb-4">宏观背景</h3>
-                        <p class="text-gray-600">香港正凭借明确的政策框架与监管创新（如《数字资产发展政策宣言2.0》、“Ensemble”沙盒计划），全力打造全球RWA枢纽。合规基础设施的完善为RWA爆发奠定了基础。</p>
-                        <h3 class="font-bold text-xl mt-6 mb-4">市场规模</h3>
-                        <p class="text-gray-600">BCG预测，2030年全球RWA市场规模将达16万亿美元。2025年上半年市场已飙升至超230亿美元，增长迅猛。</p>
+        <!-- 第8部分：RWA市场背景 -->
+        <section id="section-8" class="scroll-section">
+             <div class="content-wrapper max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+                 <div>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">市场背景与客户需求</h2>
+                    <div class="w-20 h-1 bg-blue-500 mb-8"></div>
+                    <p class="text-lg text-gray-300 leading-relaxed mb-4">
+                        <strong class="text-white">宏观背景:</strong> 香港正凭借明确的政策框架与监管创新（如《数字资产发展政策宣言2.0》、“Ensemble”沙盒计划），全力打造全球RWA枢纽。合规基础设施的完善为RWA爆发奠定了基础。
+                    </p>
+                    <p class="text-lg text-gray-300 leading-relaxed">
+                        <strong class="text-white">核心需求:</strong> 传统优质资产普遍面临融资门槛高、流动性差、融资渠道受限等问题，亟需通过RWA盘活价值。
+                    </p>
+                 </div>
+                 <div class="space-y-6">
+                    <div class="bg-white/5 p-6 rounded-xl backdrop-blur-sm">
+                        <p class="text-blue-400 text-sm font-bold">全球RWA市场规模 (BCG预测)</p>
+                        <p class="text-4xl font-bold text-white">16万亿美元 <span class="text-2xl font-normal text-gray-300">(至2030年)</span></p>
                     </div>
-                    <div class="bg-blue-50 p-8 rounded-lg">
-                        <h3 class="font-bold text-xl mb-4 text-blue-800">核心需求</h3>
-                        <p class="text-blue-700 mb-4">传统优质资产面临融资门槛高、流动性差、融资渠道受限等问题，亟需通过RWA盘活价值。资产类型包括：</p>
-                        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 text-blue-900">
-                           <li class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>国债</li>
-                           <li class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>私人信贷</li>
-                           <li class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>房地产</li>
-                           <li class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>供应链金融</li>
-                           <li class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>知识产权</li>
-                           <li class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>算力</li>
-                           <li class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>碳信用等</li>
-                        </ul>
+                     <div class="bg-white/5 p-6 rounded-xl backdrop-blur-sm">
+                        <p class="text-blue-400 text-sm font-bold">市场现状 (2025上半年)</p>
+                        <p class="text-4xl font-bold text-white">>230亿美元</p>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-xl backdrop-blur-sm">
+                        <p class="text-blue-400 text-sm font-bold">关键资产类型</p>
+                        <p class="text-lg font-medium text-white">国债、私人信贷、房地产、供应链金融、知识产权、算力、碳信用等</p>
+                    </div>
+                 </div>
+             </div>
+        </section>
+
+        <!-- 第9部分：RWA目标定位 -->
+        <section id="section-9" class="scroll-section">
+            <div class="content-wrapper max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">我们的目标与定位</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-12"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-lg">
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">目标</h3><p class="text-gray-400">成为香港顶级的合规RWA技术、发行与分销平台。</p></div>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">定位</h3><p class="text-gray-400">打造连接现实世界优质资产与Web3世界的价值桥梁。</p></div>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">合规能力</h3><p class="text-gray-400">申请香港SFC 9号牌照，并与持牌伙伴合作，提供全流程合规服务。</p></div>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M9 7h6"/><path d="M9 12h6"/><path d="M9 17h3"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">技术设施</h3><p class="text-gray-400">自研底层技术，为机构客户提供高效、安全的资产代币化与管理解决方案。</p></div>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-xl flex items-start gap-4 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 mt-1"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <div><h3 class="font-bold text-white mb-2">市场能力</h3><p class="text-gray-400">为资产方提供最低成本、最高效率的融资渠道，为投资方提供优质的RWA产品。</p></div>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- 第9部分：我们的目标与定位 -->
-        <section id="rwa-goals" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-12">我们的目标与定位</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg></div>
-                        <h3 class="font-semibold text-lg">目标与定位</h3><p class="text-sm text-gray-500 mt-2">成为香港顶级的合规RWA技术、发行与分销平台，打造价值桥梁。</p>
+        
+        <!-- 第10部分：技术与架构 -->
+        <section id="section-10" class="scroll-section">
+            <div class="content-wrapper max-w-7xl mx-auto w-full">
+                <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">核心优势</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-12"></div>
+                <div class="grid lg:grid-cols-3 gap-px bg-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
+                    <div class="bg-gray-900/80 p-6">
+                        <h3 class="text-xl font-bold text-white mb-4">链上技术与架构</h3>
+                        <p class="text-gray-400 mb-4"><strong class="text-gray-200">所需能力:</strong> 智能合约, EVM, 事件触发机制</p>
+                        <div class="border-t border-white/10 pt-4">
+                            <p class="text-blue-400 font-semibold mb-2">我们的核心优势</p>
+                            <p class="text-white font-bold">顶尖区块链技术团队</p>
+                            <p class="text-gray-400 text-sm">核心成员毕业于知名院校，具备深厚的区块链底层技术与开发经验。</p>
+                        </div>
                     </div>
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg></div>
-                        <h3 class="font-semibold text-lg">合规能力</h3><p class="text-sm text-gray-500 mt-2">申请香港证监会（SFC）9号牌照，并与持牌伙伴合作，提供全流程合规服务。</p>
+                    <div class="bg-gray-900/80 p-6">
+                        <h3 class="text-xl font-bold text-white mb-4">金融工程与合规</h3>
+                        <p class="text-gray-400 mb-4"><strong class="text-gray-200">所需能力:</strong> 信托法, 证券判定, ABS, 收益分层</p>
+                        <div class="border-t border-white/10 pt-4">
+                            <p class="text-blue-400 font-semibold mb-2">我们的核心优势</p>
+                            <p class="text-white font-bold">资深金融产品实战经验</p>
+                            <p class="text-gray-400 text-sm">团队拥有多年私募产品运营经验，成功管理超20亿资金，精通金融产品设计与风控。</p>
+                        </div>
                     </div>
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2 1M4 7l2-1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" /></svg></div>
-                        <h3 class="font-semibold text-lg">技术设施</h3><p class="text-sm text-gray-500 mt-2">自研底层技术，为机构客户提供高效、安全的资产代币化与管理解决方案。</p>
-                    </div>
-                    <div class="flex flex-col items-center text-center">
-                        <div class="bg-blue-100 rounded-full p-4 mb-4"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></div>
-                        <h3 class="font-semibold text-lg">市场能力</h3><p class="text-sm text-gray-500 mt-2">为资产方提供最低成本、最高效率的融资渠道，为投资方提供优质的RWA产品。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 第10部分：核心优势 -->
-        <section id="advantages" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto">
-                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-12">链上技术与架构</h2>
-                <div class="overflow-x-auto">
-                    <div class="bg-white rounded-lg shadow-xl border w-full">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="p-4 font-semibold">领域</th>
-                                    <th class="p-4 font-semibold">所需能力</th>
-                                    <th class="p-4 font-semibold text-blue-600">我们的核心优势</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-t">
-                                    <td class="p-4 font-bold">链上技术与架构</td>
-                                    <td class="p-4 text-gray-600">智能合约, EVM, 事件触发机制</td>
-                                    <td class="p-4 text-gray-800">顶尖区块链技术团队：核心成员毕业于知名院校，具备深厚的区块链底层技术与开发经验。</td>
-                                </tr>
-                                <tr class="border-t bg-gray-50">
-                                    <td class="p-4 font-bold">金融工程与合规</td>
-                                    <td class="p-4 text-gray-600">信托法, 证券判定, ABS, 收益分层</td>
-                                    <td class="p-4 text-gray-800">资深金融产品实战经验：团队拥有多年私募产品运营经验，成功管理超20亿资金，精通金融产品设计与风控。</td>
-                                </tr>
-                                <tr class="border-t">
-                                    <td class="p-4 font-bold">市场准入与销售</td>
-                                    <td class="p-4 text-gray-600">获取资产方, 销售RWA产品</td>
-                                    <td class="p-4 text-gray-800">强大的市场资源与渠道：过往金融履历积累了丰富的客户与渠道资源，股权众筹平台与理财产品销售业绩是最佳证明。</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="bg-gray-900/80 p-6">
+                        <h3 class="text-xl font-bold text-white mb-4">市场准入与销售</h3>
+                        <p class="text-gray-400 mb-4"><strong class="text-gray-200">所需能力:</strong> 获取资产方, 销售RWA产品</p>
+                        <div class="border-t border-white/10 pt-4">
+                             <p class="text-blue-400 font-semibold mb-2">我们的核心优势</p>
+                            <p class="text-white font-bold">强大的市场资源与渠道</p>
+                            <p class="text-gray-400 text-sm">过往金融履历积累了丰富的客户与渠道资源，股权众筹平台与理财产品销售业绩是最佳证明。</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- 第11部分：核心团队 -->
-        <section id="team" class="scroll-section animated-gradient-bg">
-            <div class="reveal container mx-auto">
-                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-12">核心团队</h2>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="bg-gray-50 border rounded-lg p-6 text-center">
-                        <h3 class="text-xl font-bold">黄斌 | CEO</h3>
-                        <p class="text-gray-600 mt-4 text-left text-sm space-y-2">
-                           <span>国内顶级投资机构前最年轻合伙人，拥有13年“募投管退”全流程投资经验。</span>
-                           <span>AJK.COM创始人，连续创业者，深度参与多个AI与智能硬件项目孵化。</span>
-                           <span>联合创办的“投篮实验室Shotlab”获深圳科创学院（李泽湘教授创办）孵化与投资。</span>
-                        </p>
+        <section id="section-11" class="scroll-section flex-col">
+            <div class="content-wrapper max-w-7xl mx-auto w-full flex-grow flex flex-col justify-center">
+                <h2 class="text-4xl md:text-5xl font-bold text-white text-center mb-4">核心团队</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto mb-12"></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/5 p-8 rounded-xl text-center backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <h3 class="text-2xl font-bold text-white">黄斌 | CEO</h3>
+                        <p class="text-gray-400 leading-relaxed mt-4 text-left text-base">国内顶级投资机构前最年轻合伙人，拥有13年“募投管退”全流程投资经验。<br>AJK.COM创始人，连续创业者，深度参与多个AI与智能硬件项目孵化。<br>联合创办的“投篮实验室Shotlab”获深圳科创学院孵化与投资。</p>
                     </div>
-                    <div class="bg-gray-50 border rounded-lg p-6 text-center">
-                        <h3 class="text-xl font-bold">李昂 | CTO</h3>
-                        <p class="text-gray-600 mt-4 text-left text-sm space-y-2">
-                           <span>中山大学数学学士，新加坡国立大学数据科学硕士。</span>
-                           <span>前微软亚洲工程院大模型对话推荐系统研究员，NUSnext实验室AI视频问答系统研究员。</span>
-                           <span>AI技术公司创始人，专注于AI大模型及Web3 AI Agent的研发。</span>
-                        </p>
+                    <div class="bg-white/5 p-8 rounded-xl text-center backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <h3 class="text-2xl font-bold text-white">李昂 | CTO</h3>
+                        <p class="text-gray-400 leading-relaxed mt-4 text-left text-base">中山大学数学学士，新加坡国立大学数据科学硕士。<br>前微软亚洲工程院大模型对话推荐系统研究员，NUSnext实验室AI视频问答系统研究员。<br>AI技术公司创始人，专注于AI大模型及Web3 AI Agent的研发。</p>
                     </div>
-                    <div class="bg-gray-50 border rounded-lg p-6 text-center">
-                        <h3 class="text-xl font-bold">杨琛 | CMO</h3>
-                        <p class="text-gray-600 mt-4 text-left text-sm space-y-2">
-                           <span>15年顶级投资机构从业经验，曾任大型持牌金融机构负责人，管理超20个分支机构，累计交易额逾30亿。</span>
-                           <span>资深加密货币投资者，精通传统金融产品设计与资管全流程。</span>
-                           <span>对链上交易流与链下合规的协同处理拥有丰富实战经验。</span>
-                        </p>
+                    <div class="bg-white/5 p-8 rounded-xl text-center backdrop-blur-sm">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <h3 class="text-2xl font-bold text-white">杨琛 | CMO</h3>
+                        <p class="text-gray-400 leading-relaxed mt-4 text-left text-base">15年顶级投资机构从业经验，曾任大型持牌金融机构负责人，管理超20个分支机构，累计交易额逾30亿。<br>资深加密货币投资者，精通传统金融产品设计与资管全流程。<br>对链上交易流与链下合规的协同处理拥有丰富实战经验。</p>
                     </div>
                 </div>
             </div>
-             <!-- 页尾 -->
-            <footer class="absolute bottom-0 left-0 right-0 p-4 text-center text-gray-500 text-sm">
-                <p>&copy; 2025 AJK Web3. All Rights Reserved.</p>
+            <!-- 页脚 -->
+            <footer class="w-full text-center p-4 text-gray-500 mt-auto">
+                <p>&copy; 2025 AJK WEB3. All Rights Reserved.</p>
             </footer>
         </section>
 
-    </div>
+    </main>
+
+    <!-- 引入第三方库用于背景动效 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const sections = document.querySelectorAll('.scroll-section');
-            const navContainer = document.getElementById('sideNav');
+        // 初始化背景动效
+        VANTA.WAVES({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x111122, // 深蓝紫色背景
+            shininess: 30.00,
+            waveHeight: 15.00,
+            waveSpeed: 0.8,
+            zoom: 0.8
+        });
 
-            // 动态生成导航点
-            sections.forEach(section => {
-                const navItem = document.createElement('li');
-                const navLink = document.createElement('a');
-                navLink.href = `#${section.id}`;
-                navLink.setAttribute('title', section.id);
-                navItem.appendChild(navLink);
-                navContainer.appendChild(navItem);
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.scroll-section');
+            const navContainer = document.querySelector('.side-nav');
+            const mainContainer = document.querySelector('.scroll-container');
+            let navLinks = [];
+
+            // 动态创建导航点
+            sections.forEach((section, index) => {
+                const link = document.createElement('a');
+                link.href = `#${section.id}`;
+                link.setAttribute('data-index', index);
+                navContainer.appendChild(link);
+                navLinks.push(link);
+
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // 使用 scrollIntoView 实现平滑滚动
+                    section.scrollIntoView({ behavior: 'smooth' });
+                });
             });
 
-            const navLinks = document.querySelectorAll('.side-nav a');
-
-            const observerOptions = {
-                root: document.querySelector('.scroll-container'), // 关键：指定滚动容器
-                rootMargin: '0px',
-                threshold: 0.6 // 超过60%视口时触发
-            };
-
-            // 观察器，用于处理导航高亮和内容动画
-            const observer = new IntersectionObserver((entries, observer) => {
+            // 使用 IntersectionObserver 监听 section 可见性
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    // 内容进入动画
-                    const revealElements = entry.target.querySelectorAll('.reveal');
                     if (entry.isIntersecting) {
-                        revealElements.forEach(el => el.classList.add('visible'));
+                        // 添加 'visible' 类以触发动画
+                        entry.target.classList.add('visible');
+
+                        // 更新导航点的激活状态
+                        const id = entry.target.getAttribute('id');
+                        const activeLink = navContainer.querySelector(`a[href="#${id}"]`);
                         
-                        // 更新导航点高亮
-                        const activeLink = document.querySelector(`.side-nav a[href="#${entry.target.id}"]`);
                         navLinks.forEach(link => link.classList.remove('active'));
-                        if (activeLink) {
+                        if(activeLink) {
                             activeLink.classList.add('active');
                         }
-                    } else {
-                         // （可选）当元素离开视口时移除动画类，以便再次滚动时触发
-                         // revealElements.forEach(el => el.classList.remove('visible'));
                     }
                 });
-            }, observerOptions);
-            
-            // 观察所有部分
-            sections.forEach(section => {
-                observer.observe(section);
-                // 确保初始加载时第一屏动画可见
-                 if (section.id === 'cover') {
-                    section.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
-                }
+            }, {
+                root: mainContainer, // 在滚动容器内观察
+                threshold: 0.6 // 当 section 60% 可见时触发
             });
 
-            // 手动触发初始状态，确保刷新时导航正确
-             setTimeout(() => {
-                const firstVisibleSection = Array.from(sections).find(section => {
-                     const rect = section.getBoundingClientRect();
-                     return rect.top >= 0 && rect.top < window.innerHeight;
-                });
-                 if (firstVisibleSection) {
-                    const activeLink = document.querySelector(`.side-nav a[href="#${firstVisibleSection.id}"]`);
-                    if (activeLink) activeLink.classList.add('active');
-                 } else {
-                     const firstLink = document.querySelector('.side-nav a');
-                     if (firstLink) firstLink.classList.add('active');
-                 }
-             }, 100);
-
+            // 观察所有 section
+            sections.forEach(section => {
+                observer.observe(section);
+            });
         });
-    </script>
 
+    </script>
 </body>
 </html>
